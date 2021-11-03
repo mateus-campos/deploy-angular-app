@@ -1,0 +1,70 @@
+
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+jobs:
+
+  test-build:
+    name: Install Dependencies
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Restore npm cache
+        uses: actions/cache@v2
+        with:
+          path: |
+           ./node_modules
+          key: npm-modules-${{ hashFiles('package-lock.json') }}
+
+      - name: Install node
+        uses: actions/setup-node@v2
+        with:
+          node-version: '16.x'
+
+      - name: Install npm dependencies
+        run: npm i
+        
+      - name: Test
+        run: ng test
+      
+      - name: Build
+        run: ng build --prod
+        
+      - name: Upload build
+        uses: actions/upload-artifact@v2
+        with:
+          name: deploy-dist
+          path: dist
+ 
+  deploy-dev:
+    name: Deploy Dev
+    needs: [test-build]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/download-artifact@v2
+      
+      - name: Download build
+        uses: actions/download-artifact@v1
+        with:
+          name: deploy-dist
+    
+      - name: Setup Google Cli
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          service_account_key: ${{ secrets.ACCOUNT_KEY }}
+          export_default_credentials: true
+
+      - name: Upload Files
+        run: |
+          gsutil cp -r $GITHUB_WORKSPACE/deploy-dist/deploy-angular-app/* gs://deploy-angular-app
+
