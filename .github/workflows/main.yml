@@ -36,7 +36,7 @@ jobs:
       - name: Upload build
         uses: actions/upload-artifact@v2
         with:
-          name: deploy-dist
+          name: dist
           path: dist
 
   deploy:
@@ -44,13 +44,8 @@ jobs:
     needs: [test-build]
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/download-artifact@v2
-
       - name: Download build
-        uses: actions/download-artifact@v1
-        with:
-          name: deploy-dist
+        uses: actions/download-artifact@v2
 
       - name: Setup Google Cli
         uses: google-github-actions/setup-gcloud@master
