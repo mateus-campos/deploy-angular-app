@@ -5,7 +5,7 @@ on:
     branches: [main]
 jobs:
   test-build:
-    name: Install Dependencies
+    name: Test & Build
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
