@@ -56,4 +56,4 @@ jobs:
 
       - name: Upload Files
         run: |
-          gsutil cp -r $GITHUB_WORKSPACE/deploy-dist/deploy-angular-app/* gs://deploy-angular-app
+          gsutil cp -r $GITHUB_WORKSPACE/dist/deploy-angular-app/* gs://deploy-angular-app
